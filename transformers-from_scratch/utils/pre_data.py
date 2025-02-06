@@ -17,8 +17,8 @@ class PrepareData:
         self.dev_en, self.dev_cn = self.wordToID(self.dev_en, self.dev_cn, self.en_word_dict, self.cn_word_dict)
         # print(self.train_en)
         #处理为batch数据
-        self.train_data = self.splitToBatch(self.train_en,self.train_cn,16,True)
-        self.dev_data = self.splitToBatch(self.dev_en,self.dev_cn,16,True)
+        self.train_data = self.splitToBatch(self.train_en,self.train_cn,64,True)
+        self.dev_data = self.splitToBatch(self.dev_en,self.dev_cn,64,True)
     def load_data(self,path):
         en = []
         cn = []
@@ -27,6 +27,7 @@ class PrepareData:
                 line = line.strip().split('\t')
                 en.append(["BOS"]+word_tokenize(line[0].lower())+["EOS"])
                 cn.append(["BOS"]+word_tokenize(" ".join([w for w in line[1]]))+["EOS"])
+
         return en,cn
 
     def build_vocab(self,sentences,max_words=50000):
@@ -77,21 +78,22 @@ class Batch:
     def __init__(self,src,trg,pad=1):
         src = torch.from_numpy(src).long()
         trg = torch.from_numpy(trg).long()
-        self.src = src
+        self.src = src.to('cpu')
         # src: batch_size,1,seq_len          再masked fill时，会广播为batch_size,seq_len,seq_len
-        self.src_mask = (src!=pad).unsqueeze(-2)
-        self.trg = trg[:,:-1]
-        self.trg_y = trg[:,1:]
+        self.src_mask = (src!=pad).unsqueeze(-2).to('cpu')
+        self.trg = trg[:,:-1].to('cpu')
+        self.trg_y = trg[:,1:].to('cpu')
         # (batch_size,1,seq_length)
-        self.trg_mask = (self.trg!=pad).unsqueeze(-2)
+        self.trg_mask = (self.trg!=pad).unsqueeze(-2).to('cpu')
         trg_casual_mask = np.ones((1,self.trg_mask.size(-1),self.trg_mask.size(-1)))
         #左下角，包括对角线，为0
         trg_casual_mask = np.triu(trg_casual_mask,k=1)
         # (batch_size,1,seq_len) & (1,seq_len,seq_len) -> (batch_size,seq_len,seq_len)
-        self.trg_mask = self.trg_mask&torch.from_numpy(trg_casual_mask==0)
-        self.ntokens = (self.trg_y!=pad).sum()
+        self.trg_mask = self.trg_mask&torch.from_numpy(trg_casual_mask==0).to('cpu')
+        self.trg_mask = self.trg_mask.to('cpu')
+        self.ntokens = (self.trg_y!=pad).sum().to('cpu')
 
-# torch.cuda.is_available()
+# torch.cpu.is_available()
 #
 # src_mask = torch.tensor([[True,True,False],[True,False,False]])
 # src_mask = src_mask.unsqueeze(-2)

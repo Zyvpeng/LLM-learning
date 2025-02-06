@@ -23,6 +23,7 @@ class MultiHeadAttention(nn.Module):
         qk = torch.matmul(q,k.transpose(-1,-2))/math.sqrt(self.d_k)
         if masked_attention is not None:
             qk = qk.masked_fill(masked_attention.unsqueeze(1)==0,float('-inf'))
+            # print(qk)
         weights = F.softmax(qk,dim=-1)   #(batch_size,num_heads,legnth_q,length_k)
         attention = torch.matmul(weights,v)   #(batch_size,num_heads,legnth_q,d_k)
         return attention
@@ -35,6 +36,7 @@ class MultiHeadAttention(nn.Module):
         k = k.view(batchsize,-1,self.num_heads,self.d_k).transpose(1,2)
         v = v.view(batchsize,-1,self.num_heads,self.d_k).transpose(1,2)
         attention = self.scaled_dot_product_attention(q,k,v,masked_attention)
+
         attention = attention.transpose(1,2).contiguous().view(batchsize,-1,self.d_model)
         output = self.W_o(attention)
         return output
@@ -52,7 +54,7 @@ class MultiHeadAttention(nn.Module):
 #
 # model = MultiHeadAttention(d_model,num_heads)
 # output = model(q,k,v,masked_attention)
-# print(output.shape)
+
 
 
 

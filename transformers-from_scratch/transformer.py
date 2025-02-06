@@ -5,6 +5,7 @@ import torch
 import torch.nn as nn
 
 # 参考 https://github.com/taoztw/Transformer/blob/master/train.py
+# https://github.com/datawhalechina/learn-nlp-with-transformers/tree/main
 class Transformer(nn.Module):
     def __init__(self, src_vocab, trg_vocab, d_model, N, heads, dropout):
         super().__init__()
@@ -12,6 +13,8 @@ class Transformer(nn.Module):
         self.decoder = Decoder(trg_vocab, d_model, N, heads, dropout)
         self.out = nn.Linear(d_model, trg_vocab)
     def forward(self, src, trg, src_mask, trg_mask):
+        # print(trg_mask)
+        # print(src_mask)
         e_outputs = self.encoder(src, src_mask)
         d_output = self.decoder(trg, e_outputs, src_mask, trg_mask)
         output = self.out(d_output)
