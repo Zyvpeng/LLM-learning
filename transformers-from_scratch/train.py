@@ -19,13 +19,14 @@ def train(data, model, criterion, optimizer):
             optimizer.step()
             if i%50 ==0:
                 total_dev_loss = 0
+                n_tokens = 0
                 with torch.no_grad():
                     for dev_batch in data.dev_data:
                         dev_out = model(dev_batch.src,dev_batch.trg,dev_batch.src_mask,dev_batch.trg_mask)
                         dev_l = criterion(dev_out.reshape(-1,data.cn_total_words),dev_batch.trg_y.reshape(-1))
                         total_dev_loss+=dev_l
-
-                print(total_dev_loss)
+                        n_tokens+=dev_batch.ntokens
+                print(total_dev_loss/n_tokens)
 
 
 
@@ -33,8 +34,11 @@ def train(data, model, criterion, optimizer):
 if __name__ =='__main__':
     print('处理数据中')
     data = PrepareData("./data/train.txt","./data/dev.txt")
-    model = Transformer(data.en_total_words,data.cn_total_words,512,16,8,0.1)
-    criterion = CrossEntropyLoss(ignore_index=1)
-    print(data.train_data)
-    optimizer = Adam(lr=0.001,params=model.parameters())
+    model = Transformer(data.en_total_words,data.cn_total_words,512,32,8,0.1)
+    total_para = 0
+    for p in model.parameters():
+        total_para+=p.numel()
+    print(f'模型参数量为:{total_para/100000000}B')
+    criterion = CrossEntropyLoss(ignore_index=1,reduction='sum')
+    optimizer = Adam(lr=1e-4,params=model.parameters())
     train(data,model,criterion,optimizer)

@@ -69,27 +69,27 @@ class PrepareData:
             batch_en = [en[index] for index in batch_idx]
             batch_cn = [cn[index] for index in batch_idx]
 
-            batch_en = seq_padding(batch_cn)
+            batch_en = seq_padding(batch_en)
             batch_cn = seq_padding(batch_cn)
             batches.append(Batch(batch_en,batch_cn))
         return batches
 class Batch:
-    def __init__(self,src,trg,pad=0):
+    def __init__(self,src,trg,pad=1):
         src = torch.from_numpy(src).long()
         trg = torch.from_numpy(trg).long()
         self.src = src
         # src: batch_size,1,seq_len          再masked fill时，会广播为batch_size,seq_len,seq_len
-        self.src_mask = (src!=1).unsqueeze(-2)
+        self.src_mask = (src!=pad).unsqueeze(-2)
         self.trg = trg[:,:-1]
         self.trg_y = trg[:,1:]
         # (batch_size,1,seq_length)
-        self.trg_mask = (self.trg!=1).unsqueeze(-2)
+        self.trg_mask = (self.trg!=pad).unsqueeze(-2)
         trg_casual_mask = np.ones((1,self.trg_mask.size(-1),self.trg_mask.size(-1)))
         #左下角，包括对角线，为0
         trg_casual_mask = np.triu(trg_casual_mask,k=1)
         # (batch_size,1,seq_len) & (1,seq_len,seq_len) -> (batch_size,seq_len,seq_len)
         self.trg_mask = self.trg_mask&torch.from_numpy(trg_casual_mask==0)
-
+        self.ntokens = (self.trg_y!=pad).sum()
 
 # torch.cuda.is_available()
 #

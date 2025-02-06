@@ -17,12 +17,12 @@ class Transformer(nn.Module):
         output = self.out(d_output)
         return output
 
-
-src = torch.randint(0,1000,(8,30))
-trg = torch.randint(0,1000,(8,30))
-src_mask = torch.ones(8,30,30)
-trg_mask = torch.ones(8,30,30)
-trg_mask = torch.tril(trg_mask,0)
-
-model = Transformer(src_vocab=1000,trg_vocab=1000,d_model=512,N=10,heads=8,dropout=0.1)
-model(src,trg,src_mask,trg_mask)
+#
+# src = torch.randint(0,1000,(8,30))
+# trg = torch.randint(0,1000,(8,30))
+# src_mask = torch.ones(8,30,30)
+# trg_mask = torch.ones(8,30,30)
+# trg_mask = torch.tril(trg_mask,0)
+#
+# model = Transformer(src_vocab=1000,trg_vocab=1000,d_model=512,N=10,heads=8,dropout=0.1)
+# model(src,trg,src_mask,trg_mask)
