@@ -43,7 +43,7 @@ class Decoder(nn.Module):
         super().__init__()
         self.N = N
         self.embed = nn.Embedding(vocab_size, d_model)
-        self.pe = PositionEncoder(d_model,100)
+        self.pe = PositionEncoder(d_model,500)
         self.layers = nn.ModuleList([DecoderLayer(d_model, heads, dropout) for _ in range(N)])
         self.norm = nn.LayerNorm(d_model)
 

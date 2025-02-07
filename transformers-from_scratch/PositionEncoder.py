@@ -23,6 +23,7 @@ class PositionEncoder(nn.Module):
         x = x*math.sqrt(self.d_model)
         seq_length = x.size(1)
         # print(self.pe.requires_grad)
+        # print(self.pe[:,:seq_length].shape)
         x = x + self.pe[:,:seq_length]
         return x
 # model = PositionEncoder(512,100)
