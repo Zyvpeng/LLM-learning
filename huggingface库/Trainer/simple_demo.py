@@ -82,6 +82,9 @@ class myModel(nn.Module):
         labels =labels.reshape(-1).long()
         loss = self.loss_fn(out,labels)
 
+        #loss是为了满足trainer的compute_loss函数的传参要求
+        #compute_loss 用 data["loss"]的方法获取loss，进行反向传播的参数更新
+        #logits这个key是为了将来进行推力时用
         return {"loss":loss,"logits":out}
 
 
