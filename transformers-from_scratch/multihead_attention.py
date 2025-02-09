@@ -43,17 +43,17 @@ class MultiHeadAttention(nn.Module):
 
 
 
-# q = torch.randn(2,10,512)
-# k = torch.randn(2,15,512)
-# v = torch.randn(2,15,512)
-# masked_attention = torch.ones(2,10,15)
-# masked_attention = torch.tril(masked_attention)
-# print(masked_attention)
-# d_model = 512
-# num_heads = 8
-#
-# model = MultiHeadAttention(d_model,num_heads)
-# output = model(q,k,v,masked_attention)
+q = torch.randn(2,10,512)
+k = torch.randn(2,15,512)
+v = torch.randn(2,15,512)
+masked_attention = torch.ones(2,10,15)
+masked_attention = torch.tril(masked_attention)
+print(masked_attention)
+d_model = 512
+num_heads = 8
+
+model = MultiHeadAttention(d_model,num_heads)
+output = model(q,k,v,masked_attention)
 
 
 
