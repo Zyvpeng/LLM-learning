@@ -246,9 +246,15 @@ training_args.dataloader_num_workers=8
 
 
 - 每个epoch shuffle
-  - 貌似不支持？因为迭代产生数据，而不是预先加载所有数据
-  - [Load a Dataset in Streaming mode — datasets 1.10.1 documentation](https://huggingface.co/docs/datasets/v1.10.1/dataset_streaming.html)中提到了解决方法，不知道trainer有没有适配
+  - 参考这里https://huggingface.co/docs/datasets/stream
+  - trainer训练时会调用set_epoch方法改变种子
+  - 只需要训练开始时调用**dataset.shuffle(seed=xx,buffer_size=xx)**就好了，这会使得dataset每次从stream中取出buffer_size条数据，然后打乱
 
 ### 方法2
 
 还没有试过
+
+
+
+
+
