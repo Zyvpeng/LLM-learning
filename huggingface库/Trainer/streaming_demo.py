@@ -15,12 +15,18 @@ class MyIterableDataset(IterableDataset):
             labels = torch.ones(length)
             print(inputs)
             yield {"inputs": inputs, "labels": labels}
+# dataset = MyIterableDataset(data_num=5)
+#
+# # 使用 for 循环迭代数据集
+# for sample in dataset:
+#     print(sample)
 
 class MyCollateFn:
     def __init__(self, padding=0):
         self.padding = padding
 
     def __call__(self, batch):
+        print(batch)
         max_length = max(len(x['inputs']) for x in batch)
         inputs = [self.pad_tensor(x['inputs'], max_length) for x in batch]
         labels = [self.pad_tensor(x['labels'], max_length) for x in batch]
